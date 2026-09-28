@@ -16,3 +16,9 @@ venv/
 build/
 dist/
 *.log
+
+# Scratch dir for inbound audio / images
+temp_downloads/
+
+# WhatsApp session credentials
+auth_info_baileys/
