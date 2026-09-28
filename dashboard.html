@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp AI Agent Dashboard & Playground</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        .dot-1 { animation: pulse-dot 1.2s infinite ease-in-out; }
+        .dot-2 { animation: pulse-dot 1.2s infinite ease-in-out 0.2s; }
+        .dot-3 { animation: pulse-dot 1.2s infinite ease-in-out 0.4s; }
+    </style>
+</head>
+<body class="bg-gray-950 text-white font-sans min-h-screen">
+    <div class="max-w-6xl mx-auto p-4 sm:p-6">
+        <!-- Header -->
+        <header class="flex flex-wrap justify-between items-center pb-6 border-b border-gray-800 gap-4">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
+                    ⚡ WhatsApp AI Agent Control Center
+                </h1>
+                <p class="text-gray-400 text-sm mt-1">Real-time connection, live logs & interactive testing playground</p>
+            </div>
+            <div id="statusBadge" class="px-4 py-2 rounded-full font-semibold text-sm bg-red-900/60 text-red-300 border border-red-700/50 flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
+                🔴 DISCONNECTED
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="flex flex-wrap space-x-2 sm:space-x-4 my-6 border-b border-gray-800">
+            <button id="tabTestBtn" onclick="switchTab('test')" class="pb-3 border-b-2 border-emerald-400 text-emerald-400 font-semibold flex items-center gap-2 text-sm sm:text-base">
+                <i class="fa-solid fa-comments"></i> 🧪 Test AI Chat Simulator
+            </button>
+            <button id="tabConnBtn" onclick="switchTab('connection')" class="pb-3 text-gray-400 font-medium hover:text-white flex items-center gap-2 text-sm sm:text-base">
+                <i class="fa-solid fa-qrcode"></i> 📱 WhatsApp Connection
+            </button>
+            <button id="tabLogsBtn" onclick="switchTab('logs')" class="pb-3 text-gray-400 font-medium hover:text-white flex items-center gap-2 text-sm sm:text-base">
+                <i class="fa-solid fa-list-check"></i> 💬 Live Chat Logs
+            </button>
+        </div>
+
+        <!-- 1. Interactive Testing Chat Tab -->
+        <div id="tabTest" class="block">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Quick Test Prompts Sidebar -->
+                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-xl flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-200 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-bolt text-yellow-400"></i> Quick Test Scenarios
+                        </h3>
+                        <p class="text-xs text-gray-400 mb-4">Click any test prompt below to test multi-lingual human-like responses:</p>
+                        
+                        <div class="space-y-2.5">
+                            <button onclick="sendQuickPrompt('Salam bhai! Kaise ho? Kya chal raha hai?')" class="w-full text-left text-xs bg-gray-800/80 hover:bg-gray-700 p-3 rounded-xl border border-gray-700/60 transition text-gray-300 hover:text-white">
+                                🇵🇰 <span class="font-medium text-emerald-400">Roman Urdu Casual:</span> "Salam bhai! Kaise ho? Kya chal raha hai?"
+                            </button>
+                            <button onclick="sendQuickPrompt('اسلام علیکم بھائی، آپ کیا کام کرتے ہیں؟')" class="w-full text-left text-xs bg-gray-800/80 hover:bg-gray-700 p-3 rounded-xl border border-gray-700/60 transition text-gray-300 hover:text-white">
+                                🇵🇰 <span class="font-medium text-emerald-400">Urdu Script:</span> "اسلام علیکم بھائی، آپ کیا کام کرتے ہیں؟"
+                            </button>
+                            <button onclick="sendQuickPrompt('Hey bro, are you free this weekend for coffee?')" class="w-full text-left text-xs bg-gray-800/80 hover:bg-gray-700 p-3 rounded-xl border border-gray-700/60 transition text-gray-300 hover:text-white">
+                                🇬🇧 <span class="font-medium text-blue-400">English Text:</span> "Hey bro, are you free this weekend for coffee?"
+                            </button>
+                            <button onclick="sendQuickPrompt('سلام وروره، څنګه يې؟ جوړ پخير يې؟')" class="w-full text-left text-xs bg-gray-800/80 hover:bg-gray-700 p-3 rounded-xl border border-gray-700/60 transition text-gray-300 hover:text-white">
+                                🇦🇫 <span class="font-medium text-amber-400">Pashto:</span> "سلام وروره، څنګه يې؟ جوړ پخير يې؟"
+                            </button>
+                            <button onclick="sendQuickPrompt('Bhai product ki price kya hai aur delivery kitne din me hogi?')" class="w-full text-left text-xs bg-gray-800/80 hover:bg-gray-700 p-3 rounded-xl border border-gray-700/60 transition text-gray-300 hover:text-white">
+                                📦 <span class="font-medium text-purple-400">Inquiry:</span> "Bhai product ki price kya hai aur delivery kitne din me hogi?"
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 pt-4 border-t border-gray-800 text-xs text-gray-400 space-y-1">
+                        <p>💡 <span class="text-gray-300">Model:</span> Groq Llama-3.1-8b</p>
+                        <p>⚡ <span class="text-gray-300">Tone:</span> Natural & Human WhatsApp style</p>
+                    </div>
+                </div>
+
+                <!-- WhatsApp Mock Window -->
+                <div class="lg:col-span-2 bg-[#0b141a] border border-gray-800 rounded-2xl shadow-2xl flex flex-col h-[560px] overflow-hidden">
+                    
+                    <!-- Chat Top Bar -->
+                    <div class="bg-[#202c33] px-4 py-3 flex items-center justify-between border-b border-gray-800">
+                        <div class="flex items-center space-x-3">
+                            <div class="relative">
+                                <div class="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center font-bold text-white text-lg">
+                                    🤖
+                                </div>
+                                <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-[#202c33] rounded-full"></span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-gray-100 text-sm">WhatsApp AI Agent</h4>
+                                <p class="text-xs text-emerald-400 flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Online & Listening
+                                </p>
+                            </div>
+                        </div>
+                        <button onclick="clearChat()" class="text-gray-400 hover:text-red-400 text-xs px-3 py-1.5 rounded-lg bg-gray-800/80 hover:bg-gray-800 transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Clear Chat
+                        </button>
+                    </div>
+
+                    <!-- Messages Body -->
+                    <div id="chatMessages" class="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-3 bg-[#0b141a] bg-opacity-95">
+                        
+                        <!-- Initial Greeting -->
+                        <div class="flex justify-start">
+                            <div class="bg-[#202c33] text-gray-100 p-3 rounded-2xl rounded-tl-sm max-w-[80%] text-sm shadow-md border border-gray-700/40">
+                                <p>Salam! 👋 Main aapka AI WhatsApp Agent hoon. Aap mujh se kisi bhi zuban mein baat kar sakte hain!</p>
+                                <span class="text-[10px] text-gray-400 block text-right mt-1">Ready</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Typing Indicator -->
+                    <div id="typingIndicator" class="hidden px-4 py-2 bg-[#0b141a]">
+                        <div class="inline-flex items-center space-x-1.5 bg-[#202c33] px-3 py-1.5 rounded-full text-xs text-gray-400 border border-gray-700/40">
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-1"></span>
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-2"></span>
+                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full dot-3"></span>
+                            <span class="ml-1 text-gray-300 font-medium">Agent typing...</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat Input Field -->
+                    <div class="p-3 bg-[#202c33] border-t border-gray-800">
+                        <form id="chatForm" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-2">
+                            <input 
+                                type="text" 
+                                id="chatInput" 
+                                placeholder="Type a message to test agent (e.g. Salam bhai)..." 
+                                autocomplete="off"
+                                class="flex-1 bg-[#2a3942] text-gray-100 text-sm px-4 py-2.5 rounded-xl border border-gray-700 focus:outline-none focus:border-emerald-500 transition placeholder-gray-500"
+                            />
+                            <button 
+                                type="submit" 
+                                id="sendBtn"
+                                class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl font-medium text-sm flex items-center justify-center transition shadow-lg disabled:opacity-50"
+                            >
+                                <i class="fa-solid fa-paper-plane mr-1"></i> Send
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 2. Connection Tab Content -->
+        <div id="tabConnection" class="hidden bg-gray-900 border border-gray-800 p-8 rounded-2xl flex flex-col items-center justify-center min-h-[420px] shadow-xl">
+            <div id="qrContainer" class="text-center">
+                <h3 class="text-xl font-bold text-gray-200 mb-2">WhatsApp Web Pairing</h3>
+                <p class="text-gray-400 text-sm mb-6">Scan this QR code using <b>Linked Devices</b> in WhatsApp on your phone</p>
+                <div class="bg-white p-4 rounded-2xl inline-block shadow-2xl border-4 border-emerald-500/20">
+                    <img id="qrImage" src="" alt="Waiting for WhatsApp Gateway..." class="w-64 h-64 object-contain">
+                </div>
+                <p class="text-xs text-gray-500 mt-4">Node gateway terminal mein <code class="text-emerald-400 bg-gray-800 px-2 py-1 rounded">node index.js</code> run karein</p>
+            </div>
+
+            <div id="connectedCard" class="hidden text-center max-w-md">
+                <div class="w-24 h-24 bg-emerald-900/40 text-emerald-400 rounded-full flex items-center justify-center text-5xl mx-auto mb-5 border-2 border-emerald-500/40 shadow-xl animate-bounce">
+                    ✓
+                </div>
+                <h2 class="text-2xl font-extrabold text-emerald-400 mb-2">WhatsApp Connected Successfully!</h2>
+                <p class="text-gray-300 text-sm leading-relaxed">Agent is active and automatically responding to incoming messages in real-time.</p>
+            </div>
+        </div>
+
+        <!-- 3. Live Chat Logs Tab Content -->
+        <div id="tabLogs" class="hidden">
+            <div class="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
+                <div class="p-4 border-b border-gray-800 flex flex-wrap justify-between items-center gap-3">
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-base font-bold text-gray-200">Incoming & Outgoing Messages Activity</h3>
+                        <span id="logCountBadge" class="text-xs bg-emerald-950 text-emerald-300 border border-emerald-800 px-2 py-0.5 rounded-full font-semibold">0 logs</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="clearAllLogs()" id="clearLogsBtn" class="text-xs bg-red-950/80 hover:bg-red-900 text-red-300 border border-red-800/80 px-3.5 py-1.5 rounded-xl font-medium transition flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-trash-can"></i> Clear All Logs
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-800/80 text-gray-400 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="p-4">Time</th>
+                                <th class="p-4">Sender</th>
+                                <th class="p-4">Type</th>
+                                <th class="p-4">Incoming Message</th>
+                                <th class="p-4">AI Agent Reply</th>
+                                <th class="p-4 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTable" class="divide-y divide-gray-800 text-sm">
+                            <!-- Dynamic Logs Inserted Here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            const tabs = ['test', 'connection', 'logs'];
+            tabs.forEach(t => {
+                const el = document.getElementById(t === 'test' ? 'tabTest' : (t === 'connection' ? 'tabConnection' : 'tabLogs'));
+                const btn = document.getElementById(t === 'test' ? 'tabTestBtn' : (t === 'connection' ? 'tabConnBtn' : 'tabLogsBtn'));
+                
+                if (t === tab) {
+                    el.classList.remove('hidden');
+                    el.classList.add('block');
+                    btn.className = "pb-3 border-b-2 border-emerald-400 text-emerald-400 font-semibold flex items-center gap-2 text-sm sm:text-base";
+                } else {
+                    el.classList.add('hidden');
+                    el.classList.remove('block');
+                    btn.className = "pb-3 text-gray-400 font-medium hover:text-white flex items-center gap-2 text-sm sm:text-base";
+                }
+            });
+        }
+
+        async function fetchDashboardData() {
+            try {
+                const res = await fetch('/api/status');
+                const data = await res.json();
+
+                // Update Status Badge
+                const badge = document.getElementById('statusBadge');
+                const qrContainer = document.getElementById('qrContainer');
+                const connectedCard = document.getElementById('connectedCard');
+
+                if(data.status === 'CONNECTED') {
+                    badge.className = "px-4 py-2 rounded-full font-semibold text-sm bg-emerald-900/80 text-emerald-200 border border-emerald-500/50 flex items-center gap-2";
+                    badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span> 🟢 CONNECTED`;
+                    qrContainer.classList.add('hidden');
+                    connectedCard.classList.remove('hidden');
+                } else {
+                    badge.className = "px-4 py-2 rounded-full font-semibold text-sm bg-red-900/60 text-red-300 border border-red-700/50 flex items-center gap-2";
+                    badge.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> 🔴 DISCONNECTED`;
+                    connectedCard.classList.add('hidden');
+                    qrContainer.classList.remove('hidden');
+
+                    if(data.qr_code) {
+                        document.getElementById('qrImage').src = data.qr_code;
+                    }
+                }
+
+                // Update count badge
+                const logCountBadge = document.getElementById('logCountBadge');
+                if (logCountBadge) {
+                    logCountBadge.innerText = `${(data.logs || []).length} logs`;
+                }
+
+                // Render Logs Table
+                const logsTable = document.getElementById('logsTable');
+                if(!data.logs || data.logs.length === 0) {
+                    logsTable.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-gray-500">No messages logged yet. Send a test message or start WhatsApp!</td></tr>`;
+                } else {
+                    logsTable.innerHTML = data.logs.map(log => `
+                        <tr class="hover:bg-gray-800/50 transition-colors" id="log-row-${log.id}">
+                            <td class="p-4 text-gray-400 whitespace-nowrap text-xs">${log.time}</td>
+                            <td class="p-4 font-semibold text-emerald-300">${log.sender}</td>
+                            <td class="p-4"><span class="px-2 py-0.5 rounded text-xs bg-gray-800 border border-gray-700 text-gray-300">${log.type}</span></td>
+                            <td class="p-4 text-gray-200 max-w-xs break-words">${log.incoming}</td>
+                            <td class="p-4 text-emerald-400 font-medium max-w-sm break-words">${log.reply}</td>
+                            <td class="p-4 text-center">
+                                <button onclick="deleteSingleLog(${log.id})" title="Delete this log" class="text-gray-400 hover:text-red-400 hover:bg-red-950/50 p-2 rounded-lg border border-transparent hover:border-red-800/50 transition">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (err) {
+                console.error("Failed to connect with Backend:", err);
+            }
+        }
+
+        async function deleteSingleLog(logId) {
+            try {
+                await fetch(`/api/logs/${logId}`, { method: 'DELETE' });
+                fetchDashboardData();
+            } catch (err) {
+                console.error("Failed to delete log:", err);
+            }
+        }
+
+        async function clearAllLogs() {
+            if(!confirm("Are you sure you want to clear all chat logs?")) return;
+            try {
+                await fetch('/api/logs', { method: 'DELETE' });
+                fetchDashboardData();
+            } catch (err) {
+                console.error("Failed to clear logs:", err);
+            }
+        }
+
+        // Chat Playground Logic
+        function clearChat() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = `
+                <div class="flex justify-start">
+                    <div class="bg-[#202c33] text-gray-100 p-3 rounded-2xl rounded-tl-sm max-w-[80%] text-sm shadow-md border border-gray-700/40">
+                        <p>Salam! 👋 Main aapka AI WhatsApp Agent hoon. Aap mujh se kisi bhi zuban mein baat kar sakte hain!</p>
+                        <span class="text-[10px] text-gray-400 block text-right mt-1">Ready</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function sendQuickPrompt(promptText) {
+            document.getElementById('chatInput').value = promptText;
+            handleChatSubmit(new Event('submit'));
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const userText = input.value.trim();
+            if(!userText) return;
+
+            input.value = '';
+            const chatMessages = document.getElementById('chatMessages');
+            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Append User message bubble
+            chatMessages.innerHTML += `
+                <div class="flex justify-end">
+                    <div class="bg-[#005c4b] text-gray-100 p-3 rounded-2xl rounded-tr-sm max-w-[80%] text-sm shadow-md">
+                        <p>${userText}</p>
+                        <div class="flex items-center justify-end gap-1 text-[10px] text-emerald-200 mt-1">
+                            <span>${now}</span>
+                            <i class="fa-solid fa-check-double text-blue-400 text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            // Show Typing Indicator
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.remove('hidden');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const res = await fetch('/api/test-chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userText, sender: 'You (Test User)' })
+                });
+                const data = await res.json();
+                typingIndicator.classList.add('hidden');
+
+                const replyTime = data.time || now;
+                const replyText = data.reply || "No reply received.";
+
+                // Append Agent message bubble
+                chatMessages.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="bg-[#202c33] text-gray-100 p-3 rounded-2xl rounded-tl-sm max-w-[80%] text-sm shadow-md border border-gray-700/40">
+                            <p>${replyText}</p>
+                            <span class="text-[10px] text-gray-400 block text-right mt-1">${replyTime}</span>
+                        </div>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                fetchDashboardData();
+
+            } catch (err) {
+                typingIndicator.classList.add('hidden');
+                chatMessages.innerHTML += `
+                    <div class="flex justify-start">
+                        <div class="bg-red-900/60 text-red-200 p-3 rounded-2xl rounded-tl-sm max-w-[80%] text-sm border border-red-700/50">
+                            <p>⚠️ Error contacting AI Engine: ${err.message}</p>
+                        </div>
+                    </div>
+                `;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Poll every 2 seconds for real-time updates
+        setInterval(fetchDashboardData, 2000);
+        fetchDashboardData();
+    </script>
+</body>
+</html>
