@@ -69,14 +69,14 @@ cd persnol-chat-agent-
 cp .env.example .env
 ```
 
-Edit `.env` and paste your keys:
+Open `.env` and paste your own keys from each provider into the empty fields:
 
 ```env
-GROQ_API_KEY=gsk_...
-GEMINI_API_KEY=AIza...
+GROQ_API_KEY=
+GEMINI_API_KEY=
 ```
 
-`.env` is git-ignored and must never be committed.
+Never paste real key values into this file, a README, or any other committed file. `.env` is git-ignored on purpose — if you add it by hand, the next `git add .` will leak your credentials.
 
 ### 3. Create the temp media directory
 
